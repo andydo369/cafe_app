@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"from pypdf import PdfReader; reader = PdfReader\\(r'C:\\\\Users\\\\andy1\\\\Downloads\\\\Andy - CS IA official.docx \\(1\\).pdf'\\); print\\(f'Pages: {len\\(reader.pages\\)}'\\); text = reader.pages[0].extract_text\\(\\); print\\(text[:3000]\\)\")",
+      "Bash(pip install *)",
+      "Bash(python -c \"from pypdf import PdfReader; reader = PdfReader\\(r'C:\\\\Users\\\\andy1\\\\Downloads\\\\Andy - CS IA official.docx \\(1\\).pdf'\\); print\\(f'Pages: {len\\(reader.pages\\)}'\\); [print\\(reader.pages[i].extract_text\\(\\)\\) for i in range\\(min\\(5, len\\(reader.pages\\)\\)\\)]\")",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(python -c ' *)"
+    ]
+  }
+}
