@@ -26,9 +26,21 @@ class InventoryScreen(tk.Frame):
         if self.role == "manager":
             button_frame = tk.Frame(self)
             button_frame.pack(pady=6)
-            tk.Button(button_frame, text="Add Ingredient", width=16, command=self.open_add).pack(side="left", padx=4)
-            tk.Button(button_frame, text="Edit Selected", width=16, command=self.open_edit).pack(side="left", padx=4)
-            tk.Button(button_frame, text="Delete Selected", width=16, command=self.delete).pack(side="left", padx=4)
+            tk.Button(button_frame, 
+                      text="Add Ingredient", 
+                      width=16, 
+                      command=self.open_add
+                      ).pack(side="left", padx=4)
+            tk.Button(button_frame, 
+                    text="Edit Selected", 
+                    width=16, 
+                    command=self.open_edit
+                    ).pack(side="left", padx=4)
+            tk.Button(button_frame, 
+                    text="Delete Selected", 
+                    width=16, 
+                    command=self.delete
+                    ).pack(side="left", padx=4)
 
     def load_ingredients(self):
         self.listbox.delete(0, tk.END)

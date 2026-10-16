@@ -89,7 +89,9 @@ class OrderScreen(tk.Frame):
                 label = f"{subcategory_name}  (+{subcategory_price} VND)"
             else:
                 label = subcategory_name
-            tk.Checkbutton(popup, text=label, variable=var).pack(anchor="w", padx=20) # shows box
+            tk.Checkbutton( popup,
+                            text=label, 
+                            variable=var).pack(anchor="w", padx=20) # shows box
             checks.append((subcategory_id, subcategory_name, subcategory_price, var)) # adds tuple to checks
 
         def confirm():
@@ -107,7 +109,11 @@ class OrderScreen(tk.Frame):
         tk.Button(popup, text="Add to Order", command=confirm).pack(pady=16)
 
     def add_to_order(self, item_id, item_name, total_price, subcategory_ids, subcategory_names):
-        self.order.append({"item_id": item_id, "name": item_name, "price": total_price, "subcategory_ids": subcategory_ids, "subcategory_names": subcategory_names}) # adds dict to order list
+        self.order.append({"item_id": item_id, 
+                           "name": item_name, 
+                           "price": total_price, 
+                           "subcategory_ids": subcategory_ids, 
+                           "subcategory_names": subcategory_names}) # adds dict to order list
         self.refresh_order_list()
 
     def refresh_order_list(self):
@@ -121,7 +127,8 @@ class OrderScreen(tk.Frame):
                 subcategory_text = subcategory_text + name
             if subcategory_text == "":
                 subcategory_text = "no options"
-            self.order_listbox.insert(tk.END, f"{entry['name']} ({subcategory_text})  —  {entry['price']} VND") # add to right panel's list
+            self.order_listbox.insert(tk.END, 
+                                      f"{entry['name']} ({subcategory_text})  —  {entry['price']} VND") # add to right panel's list
             total += entry["price"]
         self.total_label.config(text=f"Total: {total} VND")
 

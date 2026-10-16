@@ -25,7 +25,11 @@ class ItemManagementScreen(tk.Frame):
 
         button_frame = tk.Frame(self)
         button_frame.pack(pady=6)
-        tk.Button(button_frame, text="Add Item", width=14, command=self.open_add).pack(side="left", padx=4)
+        tk.Button(button_frame, 
+                  text="Add Item", 
+                  width=14, 
+                  command=self.open_add
+                ).pack(side="left", padx=4)
         tk.Button(button_frame, text="Edit Item", width=14, command=self.open_edit).pack(side="left", padx=4)
         tk.Button(button_frame, text="Delete Item", width=14, command=self.delete_item).pack(side="left", padx=4)
 
