@@ -24,6 +24,12 @@ class HomeScreen(tk.Frame):
                         command=lambda: navigate("items") # quick way to create a function in one line
                     ).pack(pady=8) # when clicked navigates like in main.py
             
+            tk.Button(
+                        self, 
+                        text="Subcategory Management", 
+                        width=25,
+                        command=lambda: navigate("subcategories") # quick way to create a function in one line
+                    ).pack(pady=8) # when clicked navigates like in main.py
 
             tk.Button(self, text="Inventory", width=25,
                       command=lambda: navigate("inventory")).pack(pady=8)

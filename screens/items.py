@@ -91,22 +91,7 @@ class ItemFormPopup(tk.Toplevel):
 
         tk.Button(self, text="Save Name & Price", command=self.save_item).pack(anchor="w", padx=16, pady=8)
 
-        tk.Label(self, text="Subcategories:").pack(anchor="w", padx=16, pady=(6, 0))
-
-        self.subcategory_listbox = tk.Listbox(self, width=50, height=5)
-        self.subcategory_listbox.pack(anchor="w", padx=16, pady=4)
-
-        subcategory_input_frame = tk.Frame(self)
-        subcategory_input_frame.pack(anchor="w", padx=16)
-        tk.Label(subcategory_input_frame, text="Name:").pack(side="left")
-        self.subcategory_name_entry = tk.Entry(subcategory_input_frame, width=16)
-        self.subcategory_name_entry.pack(side="left", padx=4)
-        tk.Label(subcategory_input_frame, text="Price:").pack(side="left")
-        self.subcategory_price_entry = tk.Entry(subcategory_input_frame, width=8)
-        self.subcategory_price_entry.pack(side="left", padx=4)
-        tk.Button(subcategory_input_frame, text="Add", command=self.add_subcategory).pack(side="left", padx=4)
-
-        tk.Button(self, text="Remove Selected Subcategory", command=self.remove_subcategory).pack(anchor="w", padx=16, pady=2)
+        
 
         tk.Label(self, text="Ingredient Costs:").pack(anchor="w", padx=16, pady=(6, 0))
 
@@ -138,11 +123,10 @@ class ItemFormPopup(tk.Toplevel):
         tk.Button(self, text="Remove Selected Ingredient", command=self.remove_ingredient).pack(anchor="w", padx=16, pady=2)
 
     def populate(self):
-        item = db.fetchone("SELECT name, price FROM Items WHERE item_id = ?", (self.item_id,))
+        item = db.get_item_by_id(self.item_id,)
         if item:
             self.name_entry.insert(0, item[0])
             self.price_entry.insert(0, item[1])
-        self.reload_subcategories()
         self.reload_ingredients()
 
     def save_item(self):
@@ -164,42 +148,7 @@ class ItemFormPopup(tk.Toplevel):
         self.on_save()
         messagebox.showinfo("Saved", "Item saved.")
 
-    def reload_subcategories(self):
-        self.subcategory_listbox.delete(0, tk.END)
-        if not self.item_id:
-            return
-        self.subcategories_data = db.get_subcategories(self.item_id)
-        for subcategory in self.subcategories_data:
-            self.subcategory_listbox.insert(tk.END, f"{subcategory[1]}  —  {subcategory[2]} VND")
-
-    def add_subcategory(self):
-        if not self.item_id:
-            messagebox.showwarning("Save Item First", "Save the item name and price first.")
-            return
-        name = self.subcategory_name_entry.get().strip()
-        price_text = self.subcategory_price_entry.get().strip()
-        if not price_text:
-            price_text = "0"
-        try:
-            price = float(price_text)
-        except ValueError:
-            messagebox.showerror("Error", "Subcategory price must be a number.")
-            return
-        if not name:
-            messagebox.showerror("Error", "Subcategory name cannot be empty.")
-            return
-        db.add_subcategory(self.item_id, name, price)
-        self.subcategory_name_entry.delete(0, tk.END)
-        self.subcategory_price_entry.delete(0, tk.END)
-        self.reload_subcategories()
-
-    def remove_subcategory(self):
-        selection = self.subcategory_listbox.curselection()
-        if not selection:
-            return
-        subcategory_id = self.subcategories_data[selection[0]][0]
-        db.delete_subcategory(subcategory_id)
-        self.reload_subcategories()
+    
 
     def reload_ingredients(self):
         self.ingredient_listbox.delete(0, tk.END)

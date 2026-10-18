@@ -149,6 +149,8 @@ def check_login(code): # login.py runs this function, it returns 'manager', 'emp
 def get_all_items(): # used in order screen to display menu list
     return fetchall("SELECT item_id, name, price FROM Items ORDER BY name")
 
+def get_item_by_id(item_id):
+    return fetchone("SELECT * FROM Items WHERE item_id = ?", (item_id,))
 
 def search_items(query): # filters by name using LIKE
     return fetchall(
@@ -177,12 +179,20 @@ def delete_item(item_id):
     execute("DELETE FROM Items WHERE item_id = ?", (item_id,))
 
 
+def get_all_subcategories():
+    return fetchall("SELECT subcategory_id, name, price FROM Subcategories ORDER BY name")
+
+
 def add_subcategory(item_id, name, price):
     cursor = execute(
         "INSERT INTO Subcategories (item_id, name, price) VALUES (?, ?, ?)",
         (item_id, name, price)
     )
     return cursor.lastrowid
+
+
+def update_subcategory(subcategory_id, name, price):
+    execute("UPDATE Subcategories SET name = ?, price = ? WHERE subcategory_id = ?", (name, price, subcategory_id))
 
 
 def delete_subcategory(subcategory_id):

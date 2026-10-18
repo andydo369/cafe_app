@@ -19,6 +19,8 @@ class LoginScreen(tk.Frame):
 
     def login(self):
         code = self.code_entry.get().strip()
+        
+        
         role = db.check_login(code) # sends to db.py to check which code this belongs to
 
         if role is None:

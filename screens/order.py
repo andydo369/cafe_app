@@ -61,6 +61,7 @@ class OrderScreen(tk.Frame):
 
     def on_item_select(self, event):
         selection = self.item_listbox.curselection() # gets row number of selected item as a tuple
+        print(selection)
         if not selection: # if nothing is selected, return nothing
             return
         row_number = selection[0] # extracts row number from tuple

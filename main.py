@@ -5,6 +5,7 @@ from screens.login import LoginScreen
 from screens.home import HomeScreen
 from screens.order import OrderScreen
 from screens.items import ItemManagementScreen
+from screens.subcategories import SubcategoryManagementScreen
 from screens.inventory import InventoryScreen
 from screens.reports import ReportsScreen
 
@@ -33,6 +34,10 @@ def main():
 
         elif destination == "items" and current_role[0] == "manager": # only available when destination is items and role is manager
             screen = ItemManagementScreen(root, navigate=navigate)
+            screen.pack(expand=True, fill="both")
+
+        elif destination == "subcategories" and current_role[0] == "manager": # only available when destination is items and role is manager
+            screen = SubcategoryManagementScreen(root, navigate=navigate)
             screen.pack(expand=True, fill="both")
 
         elif destination == "inventory": # does not have a condition regarding roles so everyone can go 
@@ -65,7 +70,8 @@ def main():
         screen = SetupScreen(root, on_complete=show_login)
         screen.pack(expand=True, fill="both")
     else:
-        show_login()
+        after_login("manager")
+        # show_login()
 
     root.mainloop() # keeps window opened
 
