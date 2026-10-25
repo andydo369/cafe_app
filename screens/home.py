@@ -1,16 +1,17 @@
 import tkinter as tk
+import state
 
 
 class HomeScreen(tk.Frame):
-    def __init__(self, master, role, navigate): # takes root, role and navigate from main.py
+    def __init__(self, master, navigate): # takes root and navigate from main.py
         super().__init__(master)
 
         tk.Label(self, 
                  text="Boba Tea POS", 
                  font=("Segoe UI", 18, "bold")).pack(pady=30)
-        tk.Label(self, text=f"Logged in as: {role}").pack()
+        tk.Label(self, text=f"Logged in as: {state.role}").pack()
 
-        if role == "manager":
+        if state.role == "manager":
             # tk.Button(  self, 
             #             text="Item Management", 
             #             width=25,

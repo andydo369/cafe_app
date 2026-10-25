@@ -1,0 +1,1 @@
+role = None # current user's role, universal variable

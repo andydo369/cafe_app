@@ -1,12 +1,12 @@
 import tkinter as tk
 from tkinter import messagebox
 import db
+import state
 
 
 class InventoryScreen(tk.Frame):
-    def __init__(self, master, role, navigate):
+    def __init__(self, master, navigate):
         super().__init__(master)
-        self.role = role
         self.navigate = navigate
         self.selected_id = None
 
@@ -23,7 +23,7 @@ class InventoryScreen(tk.Frame):
         self.listbox.pack(padx=10, pady=4, fill="both", expand=True)
         self.listbox.bind("<<ListboxSelect>>", self.on_select)
 
-        if self.role == "manager":
+        if state.role == "manager":
             button_frame = tk.Frame(self)
             button_frame.pack(pady=6)
             tk.Button(button_frame, 

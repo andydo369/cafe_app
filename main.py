@@ -1,5 +1,6 @@
 import tkinter as tk
 import db
+import state
 from screens.setup import SetupScreen
 from screens.login import LoginScreen
 from screens.home import HomeScreen
@@ -16,7 +17,6 @@ def main():
     root.title("Boba Tea POS")
     root.state("zoomed")
 
-    current_role = [None] # list where role would be later stated in
 
     def clear(): # used to destroy screen when changing between screens
         for widget in root.winfo_children():
@@ -24,53 +24,46 @@ def main():
 
     def navigate(destination): # let the application know which screen to go to next
         clear()
+        
         if destination == "home": # does not have a condition regarding roles so everyone can go 
-            screen = HomeScreen(root, role=current_role[0], navigate=navigate)
+            screen = HomeScreen(root, navigate=navigate)
             screen.pack(expand=True, fill="both")
 
-        elif destination == "order" and current_role[0] == "employee": # only available when destination is order and role is employee
+        elif destination == "order" and state.role == "employee": # only available when destination is order and role is employee
             screen = OrderScreen(root, navigate=navigate)
             screen.pack(expand=True, fill="both")
 
-        elif destination == "items" and current_role[0] == "manager": # only available when destination is items and role is manager
+        elif destination == "items" and state.role == "manager": # only available when destination is items and role is manager
             screen = ItemManagementScreen(root, navigate=navigate)
             screen.pack(expand=True, fill="both")
 
-        elif destination == "subcategories" and current_role[0] == "manager": # only available when destination is items and role is manager
+        elif destination == "subcategories" and state.role == "manager": # only available when destination is items and role is manager
             screen = SubcategoryManagementScreen(root, navigate=navigate)
             screen.pack(expand=True, fill="both")
 
         elif destination == "inventory": # does not have a condition regarding roles so everyone can go 
-            screen = InventoryScreen(root, role=current_role[0], navigate=navigate)
+            screen = InventoryScreen(root, navigate=navigate)
             screen.pack(expand=True, fill="both")
 
-        elif destination == "reports" and current_role[0] == "manager": # only available when destination is reports and role is manager
+        elif destination == "reports" and state.role == "manager": # only available when destination is reports and role is manager
             screen = ReportsScreen(root, navigate=navigate)
             screen.pack(expand=True, fill="both")
 
         elif destination == "logout": # does not have a condition regarding roles so everyone can go 
-            current_role[0] = None
+            state.role = None
             show_login()
 
 
     def show_login():
         clear()
-        screen = LoginScreen(root, on_login=after_login)
+        screen = LoginScreen(root, navigate=navigate)
         screen.pack(expand=True, fill="both")
-
-    def after_login(role):
-        current_role[0] = role # role taken from login where the function in db.py is run to determine role
-        clear()
-        # screen = HomeScreen(root, role=current_role[0], navigate=navigate)
-        # screen.pack(expand=True, fill="both")
-        navigate("home")
 
     if db.is_first_launch():
         clear()
         screen = SetupScreen(root, on_complete=show_login)
         screen.pack(expand=True, fill="both")
     else:
-        # after_login("manager")
         show_login()
 
     root.mainloop() # keeps window opened
