@@ -125,8 +125,8 @@ class ItemFormPopup(tk.Toplevel):
     def populate(self):
         item = db.get_item_by_id(self.item_id,)
         if item:
-            self.name_entry.insert(0, item[0])
-            self.price_entry.insert(0, item[1])
+            self.name_entry.insert(0, item[1])
+            self.price_entry.insert(0, item[2])
         self.reload_ingredients()
 
     def save_item(self):
@@ -137,7 +137,7 @@ class ItemFormPopup(tk.Toplevel):
             messagebox.showerror("Error", "Price must be a number.")
             return
         if not name:
-            messagebox.showerror("Error", "Item name cannot be empty.")
+            messagebox.showerror("Error", "Name cannot be empty.")
             return
 
         if self.item_id:

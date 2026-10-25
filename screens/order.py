@@ -8,7 +8,7 @@ class OrderScreen(tk.Frame):
         super().__init__(master)
         self.navigate = navigate
         self.order = []  # list of dicts {item_id, name, price, subcategory_ids, subcategory_names}
-
+        self.total_price = 0
         self.build_ui()
         self.load_items()
 
@@ -25,7 +25,7 @@ class OrderScreen(tk.Frame):
         def on_search_change(name, index, mode): # called every time the search box changes
             self.load_items()
 
-        self.search_var.trace("w", on_search_change)
+        self.search_var.trace_add("write", on_search_change)
         tk.Entry(left, textvariable=self.search_var, width=30).pack(anchor="w", pady=(4, 8))
 
         self.item_listbox = tk.Listbox(left, width=35, height=20) # creates menu list
@@ -61,14 +61,13 @@ class OrderScreen(tk.Frame):
 
     def on_item_select(self, event):
         selection = self.item_listbox.curselection() # gets row number of selected item as a tuple
-        print(selection)
         if not selection: # if nothing is selected, return nothing
             return
         row_number = selection[0] # extracts row number from tuple
         item = self.items_data[row_number] # gets tuple of item based on row number
         item_id, item_name, item_price = item # unpacks each component of the tuple
 
-        subcategories = db.get_subcategories(item_id) # checks whether it has any subcategories
+        subcategories = db.get_all_subcategories() # checks whether it has any subcategories
 
         if subcategories:
             self.show_subcategory_popup(item_id, item_name, item_price, subcategories)
@@ -96,15 +95,15 @@ class OrderScreen(tk.Frame):
             checks.append((subcategory_id, subcategory_name, subcategory_price, var)) # adds tuple to checks
 
         def confirm():
-            selected_ids = []
-            selected_names = []
+            selected_sub_ids = []
+            selected_sub_names = []
             extra = 0
             for subcategory_id, subcategory_name, subcategory_price, var in checks:
-                if var.get(): # checks if checkbox ticked, returns T/F
-                    selected_ids.append(subcategory_id)
-                    selected_names.append(subcategory_name)
+                if var.get() is True: # checks if checkbox ticked, returns T/F
+                    selected_sub_ids.append(subcategory_id)
+                    selected_sub_names.append(subcategory_name)
                     extra += subcategory_price # adds together price of all selected
-            self.add_to_order(item_id, item_name, item_price + extra, selected_ids, selected_names)
+            self.add_to_order(item_id, item_name, item_price + extra, selected_sub_ids, selected_sub_names)
             popup.destroy()
 
         tk.Button(popup, text="Add to Order", command=confirm).pack(pady=16)
@@ -119,7 +118,6 @@ class OrderScreen(tk.Frame):
 
     def refresh_order_list(self):
         self.order_listbox.delete(0, tk.END) # clears listbox
-        total = 0
         for entry in self.order: # entry is a dictionary, loops through each dict in order list
             subcategory_text = ""
             for name in entry["subcategory_names"]:
@@ -130,8 +128,8 @@ class OrderScreen(tk.Frame):
                 subcategory_text = "no options"
             self.order_listbox.insert(tk.END, 
                                       f"{entry['name']} ({subcategory_text})  —  {entry['price']} VND") # add to right panel's list
-            total += entry["price"]
-        self.total_label.config(text=f"Total: {total} VND")
+            self.total_price += entry["price"]
+        self.total_label.config(text=f"Total: {self.total_price} VND")
 
     def remove_item(self):
         selection = self.order_listbox.curselection() # gets index of clicked item
@@ -141,27 +139,22 @@ class OrderScreen(tk.Frame):
         self.refresh_order_list()
 
     def confirm_order(self):
-        if not self.order:
-            messagebox.showwarning("Empty Order", "No items in the order.")
-            return
+        
+        order_id = db.create_order(self.total_price)
 
-        total = 0
-        for entry in self.order:
-            total += entry["price"]
-        order_id = db.create_order(total)
-
-        for entry in self.order: # loops through every item in the order, records in database
-            ordered_item_id = db.add_ordered_item(order_id, entry["item_id"])
-            for subcategory_id in entry["subcategory_ids"]: # loops through every subcategory, records in database
+        for item in self.order:
+            ordered_item_id = db.add_ordered_item(order_id, item["item_id"])
+            for subcategory_id in item["subcategory_ids"]:
                 db.add_ordered_item_subcategory(ordered_item_id, subcategory_id)
-            db.deduct_inventory(entry["item_id"])
+            db.deduct_inventory(item["item_id"])
+
 
         # Check for low stock and clears order and right panel's list
         low_stock = db.get_low_stock_ingredients()
         self.order = []
         self.refresh_order_list()
 
-        message = f"Order confirmed! Total: {total} VND"
+        message = f"Order confirmed! Total: {self.total_price} VND"
         if low_stock:
             names_text = ""
             for ingredient in low_stock:

@@ -42,7 +42,8 @@ def create_tables():
     conn = get_connection()
     cursor = conn.cursor()
     # uses executescript since need to run multiple commands at once
-    cursor.executescript("""
+    cursor.executescript(
+        """
         CREATE TABLE IF NOT EXISTS Users (
             id          INTEGER PRIMARY KEY,
             role        TEXT    NOT NULL,
@@ -57,10 +58,8 @@ def create_tables():
 
         CREATE TABLE IF NOT EXISTS Subcategories (
             subcategory_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            item_id        INTEGER NOT NULL,
             name           TEXT    NOT NULL,
-            price          REAL    NOT NULL DEFAULT 0,
-            FOREIGN KEY (item_id) REFERENCES Items(item_id) ON DELETE CASCADE
+            price          REAL    NOT NULL DEFAULT 0
         );
 
         CREATE TABLE IF NOT EXISTS Orders (
@@ -109,7 +108,8 @@ def create_tables():
             FOREIGN KEY (subcategory_id)  REFERENCES Subcategories(subcategory_id) ON DELETE CASCADE,
             FOREIGN KEY (ingredient_id)   REFERENCES Ingredients(ingredient_id) ON DELETE CASCADE
         );
-    """)
+    """
+    )
 
     # Seed the two user roles if not already present
     cursor.execute("SELECT COUNT(*) FROM Users") # count how many rows, if 0 then add 2 to that table
@@ -159,13 +159,6 @@ def search_items(query): # filters by name using LIKE
     )
 
 
-def get_subcategories(item_id): # gets all subcategories that belong to an item
-    return fetchall(
-        "SELECT subcategory_id, name, price FROM Subcategories WHERE item_id = ?",
-        (item_id,)
-    )
-
-
 def add_item(name, price):
     cursor = execute("INSERT INTO Items (name, price) VALUES (?, ?)", (name, price))
     return cursor.lastrowid # returns ID immediately
@@ -182,22 +175,22 @@ def delete_item(item_id):
 def get_all_subcategories():
     return fetchall("SELECT subcategory_id, name, price FROM Subcategories ORDER BY name")
 
+def get_subcategory_by_id(subcategory_id):
+    return fetchone("SELECT * FROM Subcategories WHERE subcategory_id = ?", (subcategory_id,))
 
-def add_subcategory(item_id, name, price):
+def add_subcategory(name, price):
     cursor = execute(
-        "INSERT INTO Subcategories (item_id, name, price) VALUES (?, ?, ?)",
-        (item_id, name, price)
+        "INSERT INTO Subcategories (name, price) VALUES (?, ?)",
+        (name, price)
     )
     return cursor.lastrowid
-
-
-def update_subcategory(subcategory_id, name, price):
-    execute("UPDATE Subcategories SET name = ?, price = ? WHERE subcategory_id = ?", (name, price, subcategory_id))
 
 
 def delete_subcategory(subcategory_id):
     execute("DELETE FROM Subcategories WHERE subcategory_id = ?", (subcategory_id,))
 
+def update_subcategory(subcategory_id, name, price):
+    execute("UPDATE Subcategories SET name = ?, price = ? WHERE subcategory_id = ?", (name, price, subcategory_id))
 
 def get_all_ingredients():
     return fetchall("SELECT ingredient_id, name, current_stock, reorder_level FROM Ingredients ORDER BY name")

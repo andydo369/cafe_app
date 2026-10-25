@@ -15,6 +15,7 @@ class LoginScreen(tk.Frame):
         self.code_entry = tk.Entry(self, show="*", width=30) # entry is like input in Python
         self.code_entry.pack(pady=10)
 
+        self.code_entry.bind("<Return>", lambda x:self.login()) # runs login when Return (enter)
         tk.Button(self, text="Login", command=self.login).pack() # when clicked
 
     def login(self):

@@ -70,8 +70,8 @@ def main():
         screen = SetupScreen(root, on_complete=show_login)
         screen.pack(expand=True, fill="both")
     else:
-        after_login("manager")
-        # show_login()
+        # after_login("manager")
+        show_login()
 
     root.mainloop() # keeps window opened
 
